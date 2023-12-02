@@ -10,10 +10,13 @@ import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 
 contract ZetaAvaCCIPSender  {
+    address public constant AvaxUsdAddress = 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
+    AggregatorV3Interface internal priceFeed;
     event TokenReceived(address sender, uint amount);
     event FundsWithdrawn(address withdrawnBy, uint amount);
     event ConfigurationChanged(string config, address oldValue, address newValue);
     event ChainSelectorChanged(uint64 oldSelector, uint64 newSelector);
+    event Log(address Sender, uint amount);
 
     using Strings for address;
     using Strings for uint;
@@ -32,6 +35,7 @@ contract ZetaAvaCCIPSender  {
         router = _router;
         receiver = _receiver;
         destinationChainSelector = _destinationChainSelector;
+        priceFeed = AggregatorV3Interface(AvaxUsdAddress);
         LinkTokenInterface(link).approve(router, type(uint256).max);
     }
 
@@ -39,14 +43,16 @@ contract ZetaAvaCCIPSender  {
     receive() external payable {
         emit TokenReceived(msg.sender, msg.value);
 
-        // Call another function upon receiving Ether
         handleIncomingToken(msg.sender, msg.value);
     }
 
 
     function handleIncomingToken(address sender, uint amount) internal {
-        bytes memory messageContent = abi.encode(sender, amount);
+        uint AvaxUsdPrice =  uint(getPrice()); 
+        emit Log(sender, AvaxUsdPrice);
+        uint amountToTransfer = amount * AvaxUsdPrice;
 
+        bytes memory messageContent = abi.encode(sender, amountToTransfer);
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: messageContent,
@@ -88,4 +94,29 @@ contract ZetaAvaCCIPSender  {
         emit ChainSelectorChanged(destinationChainSelector, newSelector);
         destinationChainSelector = newSelector;
     }
+
+    function getPrice() public view returns (int) {
+        (
+            uint80 roundID,
+            int price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+        // for ETH / USD price is scaled up by 10 ** 8
+        return price / 1e8;
+    }
+}
+
+interface AggregatorV3Interface {
+    function latestRoundData()
+        external
+        view
+        returns (
+            uint80 roundId,
+            int answer,
+            uint startedAt,
+            uint updatedAt,
+            uint80 answeredInRound
+        );
 }

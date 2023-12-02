@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 //import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 
-// 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD Avax/Usd
-// 0x86d67c3D38D2bCeE722E601025C25a575021c6EA Eth/Usd
+// 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD Avax/Usd Fuji 
+// 0x694AA1769357215DE4FAC081bf1f309aDC325306 Eth/Usd Sepolia
 
 contract ZetaChainLinkOraclePrice {
     AggregatorV3Interface internal priceFeed;
