@@ -6,7 +6,7 @@ import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 
 contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard {
-    event FundsTransferred(address recipient, uint256 amount);
+    event FundsTransferred(address indexed recipient, uint256 indexed amount);
 
     constructor(address router) CCIPReceiver(router) {}
 
