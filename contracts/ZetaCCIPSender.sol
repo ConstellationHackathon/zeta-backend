@@ -10,10 +10,10 @@ import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 
 contract ZetaAvaCCIPSender  {
-    event TokenReceived(address sender, uint amount);
-    event FundsWithdrawn(address withdrawnBy, uint amount);
-    event ConfigurationChanged(string config, address oldValue, address newValue);
-    event ChainSelectorChanged(uint64 oldSelector, uint64 newSelector);
+    event TokenReceived(address indexed sender, uint indexed amount);
+    event FundsWithdrawn(address indexed withdrawnBy, uint indexed amount);
+    event ConfigurationChanged(string indexed config, address indexed oldValue, address indexed newValue);
+    event ChainSelectorChanged(uint64 indexed oldSelector, uint64  indexed newSelector);
 
     using Strings for address;
     using Strings for uint;
