@@ -12,10 +12,10 @@ import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkT
 contract ZetaAvaCCIPSender  {
     address public constant AvaxUsdAddress = 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
     AggregatorV3Interface internal priceFeed;
-    event TokenReceived(address sender, uint amount);
-    event FundsWithdrawn(address withdrawnBy, uint amount);
-    event ConfigurationChanged(string config, address oldValue, address newValue);
-    event ChainSelectorChanged(uint64 oldSelector, uint64 newSelector);
+    event TokenReceived(address indexed sender, uint indexed amount);
+    event FundsWithdrawn(address indexed withdrawnBy, uint indexed amount);
+    event ConfigurationChanged(string indexed config, address indexed oldValue, address indexed newValue);
+    event ChainSelectorChanged(uint64 indexed oldSelector, uint64  indexed newSelector);
     event Log(address Sender, uint amount);
 
     using Strings for address;

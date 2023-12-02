@@ -8,7 +8,7 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard {
     AggregatorV3Interface internal priceFeed;
     address public constant EthUsdAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
-    event FundsTransferred(address recipient, uint256 amount);
+    event FundsTransferred(address indexed recipient, uint256 indexed amount);
     event LogFound(address userAddress, uint256 amountToTransfer);
 
     constructor(address router) CCIPReceiver(router) {
