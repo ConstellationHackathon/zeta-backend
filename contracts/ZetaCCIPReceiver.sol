@@ -24,13 +24,18 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
         uint256 indexed amount,
         uint256 indexed timestamp
     );
+    event FundsWithdrawn(
+        address indexed withdrawnBy,
+        uint indexed amount,
+        uint256 indexed timestamp
+    );
     event ConfigurationChanged(
         string indexed config,
         address indexed oldValue,
         address indexed newValue,
         uint256 timestamp
     );
-    
+
     address public EthUsdAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
     constructor(address router) CCIPReceiver(router) Ownable(msg.sender) {
@@ -47,6 +52,8 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
         );
         emit MsgReceived(userAddress, userAmount, block.timestamp);
         uint amountToTransfer = userAmount / EthUsdPrice;
+        uint fee = amountToTransfer / 100;
+        amountToTransfer -= fee;
         require(userAddress != address(0), "Invalid recipient address");
         require(
             amountToTransfer <= address(this).balance,
@@ -85,6 +92,18 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
             newAddress,
             block.timestamp
         );
+    }
+    function withdrawFunds() external onlyOwner {
+        uint balance = address(this).balance;
+        require(
+            balance > 0,
+            "The smart contract does not have enough founds to withdraw"
+        );
+
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Send ");
+
+        emit FundsWithdrawn(msg.sender, balance, block.timestamp);
     }
 }
 
