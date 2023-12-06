@@ -9,7 +9,7 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
-contract ZetaCCIPSender {
+contract ZetaCCIPSender is Ownable {
     AggregatorV3Interface internal priceFeed;
 
     event AvaxReceived(
@@ -45,8 +45,7 @@ contract ZetaCCIPSender {
         uint256 indexed timestamp
     );
 
-    address public constant AvaxUsdAddress =
-        0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
+    address public AvaxUsdAddress = 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
     address link;
     address router;
     address receiver;
@@ -96,26 +95,23 @@ contract ZetaCCIPSender {
         IRouterClient(router).ccipSend(destinationChainSelector, message);
     }
 
-    // Function to withdraw the funds from the contract, accessible only by the owner
-    function withdrawFunds() external {
+    function withdrawFunds() external onlyOwner {
         uint balance = address(this).balance;
         require(
             balance > 0,
             "The smart contract does not have enough founds to withdraw"
         );
 
-        // Transfer all the funds to the owner's address
         (bool success, ) = msg.sender.call{value: balance}("");
         require(success, "Send ");
 
         emit FundsWithdrawn(msg.sender, balance, block.timestamp);
     }
 
-    // Function to update contract configurations, accessible only by the owner
     function updateConfiguration(
         string memory config,
         address newValue
-    ) external {
+    ) external onlyOwner {
         if (keccak256(bytes(config)) == keccak256(bytes("link"))) {
             emit ConfigurationChanged(config, link, newValue, block.timestamp);
             link = newValue;
@@ -141,7 +137,7 @@ contract ZetaCCIPSender {
     }
 
     // Function to update destination chain selector, accessible only by the owner
-    function updateDestinationChainSelector(uint64 newSelector) external {
+    function updateDestinationChainSelector(uint64 newSelector) external onlyOwner {
         emit ChainSelectorChanged(
             destinationChainSelector,
             newSelector,
@@ -160,6 +156,17 @@ contract ZetaCCIPSender {
         ) = priceFeed.latestRoundData();
         // for ETH / USD price is scaled up by 10 ** 8
         return price / 1e8;
+    }
+
+    function updateAvaxUsdAddress(address newAddress) external onlyOwner {
+        AvaxUsdAddress = newAddress;
+        priceFeed = AggregatorV3Interface(AvaxUsdAddress);
+        emit ConfigurationChanged(
+            "AvaxUsdAddress",
+            AvaxUsdAddress,
+            newAddress,
+            block.timestamp
+        );
     }
 }
 
