@@ -59,7 +59,7 @@ contract ZetaCCIPSender is Ownable {
         address _link,
         address _router,
         uint64 _destinationChainSelector
-    ) {
+    ) Ownable(msg.sender) {
         // _receiver Smart Contract receiver address
         // _link CCIP link address
         // _router CCIP router address
