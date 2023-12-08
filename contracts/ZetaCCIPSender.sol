@@ -14,27 +14,30 @@ contract ZetaCCIPSender is Ownable {
 
     event AvaxReceived(
         address indexed sender,
+        bytes32 indexed transactionId,
         uint256 indexed tokenAmount,
-        uint256 indexed timestamp
+        uint256  timestamp
     );
     event AvaxPriceInUSD(
         address indexed sender,
+        bytes32 indexed transactionId,
         uint256 indexed price,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
     event AmountSentInUSD(
         address indexed sender,
+        bytes32 indexed transactionId,
         uint256 indexed amountSent,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
     event FundsWithdrawn(
         address indexed withdrawnBy,
         uint indexed amount,
-        uint256 indexed timestamp
+        uint256  timestamp
     );
 
     event ConfigurationChanged(
-        string indexed config,
+        string  indexed config,
         address indexed oldValue,
         address indexed newValue,
         uint256 timestamp
@@ -42,7 +45,7 @@ contract ZetaCCIPSender is Ownable {
     event ChainSelectorChanged(
         uint64 indexed oldSelector,
         uint64 indexed newSelector,
-        uint256 indexed timestamp
+        uint256  timestamp
     );
 
     address public AvaxUsdAddress = 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
@@ -78,13 +81,14 @@ contract ZetaCCIPSender is Ownable {
     }
 
     function handleIncomingToken(address sender, uint amount) internal {
-        emit AvaxReceived(sender, amount, block.timestamp);
+        bytes32 transactionId = generateTransactionId(sender, amount, block.timestamp);
+        emit AvaxReceived(sender, transactionId, amount, block.timestamp);
         uint avaxUsdPrice = uint(getPrice());
-        emit AvaxPriceInUSD(sender, avaxUsdPrice, block.timestamp);
+        emit AvaxPriceInUSD(sender, transactionId, avaxUsdPrice, block.timestamp);
         uint amountToTransfer = amount * avaxUsdPrice;
-        emit AmountSentInUSD(sender, amountToTransfer, block.timestamp);
+        emit AmountSentInUSD(sender, transactionId, amountToTransfer, block.timestamp);
 
-        bytes memory messageContent = abi.encode(sender, amountToTransfer);
+        bytes memory messageContent = abi.encode(sender, amountToTransfer, transactionId);
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: messageContent,
@@ -168,6 +172,10 @@ contract ZetaCCIPSender is Ownable {
             block.timestamp
         );
     }
+    function generateTransactionId(address sender, uint256 tokenAmount, uint256 timestamp) public pure returns (bytes32)       
+     {
+          return keccak256(abi.encodePacked(sender, tokenAmount, timestamp));
+     }
 }
 
 interface AggregatorV3Interface {

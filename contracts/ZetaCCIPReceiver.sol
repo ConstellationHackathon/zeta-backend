@@ -11,26 +11,30 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
 
     event MsgReceived(
         address indexed userAddress,
+        bytes32 indexed transactionId,
         uint256 indexed amountToTransferUSD,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
     event ETHToSend(
         address indexed userAddress,
+        bytes32 indexed transactionId,
         uint256 indexed amountToTransferUSD,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
     event FundsTransferred(
         address indexed recipient,
+        bytes32 indexed transactionId,
         uint256 indexed amount,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
     event FundsWithdrawn(
         address indexed withdrawnBy,
         uint indexed amount,
         uint256 indexed timestamp
     );
+
     event ConfigurationChanged(
-        string indexed config,
+        string             indexed config,
         address indexed oldValue,
         address indexed newValue,
         uint256 timestamp
@@ -46,11 +50,11 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
         Client.Any2EVMMessage memory message
     ) internal override {
         uint EthUsdPrice = uint(getPrice());
-        (address userAddress, uint256 userAmount) = abi.decode(
+        (address userAddress, uint256 userAmount, bytes32 transactionId) = abi.decode(
             message.data,
-            (address, uint256)
+            (address, uint256, bytes32)
         );
-        emit MsgReceived(userAddress, userAmount, block.timestamp);
+        emit MsgReceived(userAddress, transactionId, userAmount, block.timestamp);
         uint amountToTransfer = userAmount / EthUsdPrice;
         uint fee = amountToTransfer / 100;
         amountToTransfer -= fee;
@@ -59,10 +63,10 @@ contract ZetaCCIPReceiver is CCIPReceiver, ReentrancyGuard, Ownable {
             amountToTransfer <= address(this).balance,
             "Smart contract does not have enough balance"
         );
-        emit ETHToSend(userAddress, amountToTransfer, block.timestamp);
+        emit ETHToSend(userAddress, transactionId, amountToTransfer, block.timestamp);
         (bool success, ) = userAddress.call{value: amountToTransfer}("");
         require(success, "Transfer failed");
-        emit FundsTransferred(userAddress, amountToTransfer, block.timestamp);
+        emit FundsTransferred(userAddress, transactionId, amountToTransfer, block.timestamp);
     }
 
     // Function to allow the contract to receive ether
