@@ -1,0 +1,39 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Contract
+    network: sepolia
+    source:
+      address: "0x194ed0Fc669F810aB5Aa9564F50c92bb4e043B4a"
+      abi: Contract
+      startBlock: 4847523
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ConfigurationChanged
+        - ETHToSend
+        - FundsTransferred
+        - FundsWithdrawn
+        - MsgReceived
+        - OwnershipTransferred
+      abis:
+        - name: Contract
+          file: Contract/abis/Contract.json
+      eventHandlers:
+        - event: ConfigurationChanged(indexed string,indexed address,indexed address,uint256)
+          handler: handleConfigurationChanged
+        - event: ETHToSend(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleETHToSend
+        - event: FundsTransferred(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleFundsTransferred
+        - event: FundsWithdrawn(indexed address,indexed uint256,indexed uint256)
+          handler: handleFundsWithdrawn
+        - event: MsgReceived(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleMsgReceived
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: Contract/Contract.wasm
