@@ -1,0 +1,72 @@
+type AmountSentInUSD @entity(immutable: true) {
+  id: Bytes!
+  sender: Bytes! # address
+  transactionId: Bytes! # bytes32
+  amountSent: BigInt! # uint256
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AvaxPriceInUSD @entity(immutable: true) {
+  id: Bytes!
+  sender: Bytes! # address
+  transactionId: Bytes! # bytes32
+  price: BigInt! # uint256
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AvaxReceived @entity(immutable: true) {
+  id: Bytes!
+  sender: Bytes! # address
+  transactionId: Bytes! # bytes32
+  tokenAmount: BigInt! # uint256
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChainSelectorChanged @entity(immutable: true) {
+  id: Bytes!
+  oldSelector: BigInt! # uint64
+  newSelector: BigInt! # uint64
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ConfigurationChanged @entity(immutable: true) {
+  id: Bytes!
+  config: String! # string
+  oldValue: Bytes! # address
+  newValue: Bytes! # address
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FundsWithdrawn @entity(immutable: true) {
+  id: Bytes!
+  withdrawnBy: Bytes! # address
+  amount: BigInt! # uint256
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

@@ -1,0 +1,42 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Contract
+    network: fuji
+    source:
+      address: "0xe520Cad33d788e38FE7d7Dced1b7e11bb0457B9C"
+      abi: Contract
+      startBlock: 28407484
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AmountSentInUSD
+        - AvaxPriceInUSD
+        - AvaxReceived
+        - ChainSelectorChanged
+        - ConfigurationChanged
+        - FundsWithdrawn
+        - OwnershipTransferred
+      abis:
+        - name: Contract
+          file: ./abis/Contract.json
+      eventHandlers:
+        - event: AmountSentInUSD(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleAmountSentInUSD
+        - event: AvaxPriceInUSD(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleAvaxPriceInUSD
+        - event: AvaxReceived(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handleAvaxReceived
+        - event: ChainSelectorChanged(indexed uint64,indexed uint64,uint256)
+          handler: handleChainSelectorChanged
+        - event: ConfigurationChanged(indexed string,indexed address,indexed address,uint256)
+          handler: handleConfigurationChanged
+        - event: FundsWithdrawn(indexed address,indexed uint256,uint256)
+          handler: handleFundsWithdrawn
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/contract.ts
